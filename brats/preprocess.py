@@ -77,6 +77,7 @@ def correct_bias(in_file, out_file, image_type=sitk.sitkFloat64):
         input_image = sitk.ReadImage(in_file, image_type)
         output_image = sitk.N4BiasFieldCorrection(input_image, input_image > 0)
         sitk.WriteImage(output_image, out_file)
+        print('doned')
         return os.path.abspath(out_file)
 
 
@@ -117,6 +118,8 @@ def normalize_image(in_file, out_file, bias_correction=True):
 
 
 def convert_brats_folder(in_folder, out_folder, truth_name='seg', no_bias_correction_modalities=None):
+
+    print('check1')
     for name in config["all_modalities"]:
         try:
             image_file = get_image(in_folder, name)
@@ -128,6 +131,7 @@ def convert_brats_folder(in_folder, out_folder, truth_name='seg', no_bias_correc
                 raise error
 
         out_file = os.path.abspath(os.path.join(out_folder, name + ".nii.gz"))
+        print('check2')
         perform_bias_correction = no_bias_correction_modalities and name not in no_bias_correction_modalities
         normalize_image(image_file, out_file, bias_correction=perform_bias_correction)
     # copy the truth file
