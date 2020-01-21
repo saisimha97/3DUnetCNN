@@ -70,15 +70,6 @@ def main(overwrite=False):
                            subject_ids=subject_ids)
     data_file_opened = open_data_file(config["data_file"])
 
-    if not overwrite and os.path.exists(config["model_file"]):
-        model = load_old_model(config["model_file"])
-    else:
-        # instantiate new model
-        model = isensee2017_model(input_shape=config["input_shape"], n_labels=config["n_labels"],
-                                  initial_learning_rate=config["initial_learning_rate"],
-                                  n_base_filters=config["n_base_filters"])
-
-    # get training and testing generators
     train_generator, validation_generator, n_train_steps, n_validation_steps = get_training_and_validation_generators(
         data_file_opened,
         batch_size=config["batch_size"],
@@ -98,6 +89,17 @@ def main(overwrite=False):
         augment_flip=config["flip"],
         augment_distortion_factor=config["distort"])
 
+    if not overwrite and os.path.exists(config["model_file"]):
+        model = load_old_model(config["model_file"])
+    else:
+        # instantiate new model
+        model = isensee2017_model(input_shape=config["input_shape"], n_labels=config["n_labels"],
+                                  initial_learning_rate=config["initial_learning_rate"],
+                                  n_base_filters=config["n_base_filters"])
+
+    # get training and testing generators
+
+
     # run training
     train_model(model=model,
                 model_file=config["model_file"],
@@ -111,6 +113,8 @@ def main(overwrite=False):
                 early_stopping_patience=config["early_stop"],
                 n_epochs=config["n_epochs"])
     data_file_opened.close()
+
+    model.save("model_ise.h5")
 
 
 if __name__ == "__main__":
